@@ -2,9 +2,14 @@
 function handler () {
   EVENT_DATA=$1
   echo "$EVENT_DATA" 1>&2;
-  #TODO get next move text from event and pipe into dfrotz
+
+  #parse the move value and emit as raw unquoted text
+  MOVE=$(echo "$EVENT_DATA" | jq -r .move)
+
   #TODO load game save for current user, save after move
-  OUTPUT=$(dfrotz zork1.z3)
+  #to save, pipe: save\nfilename
+  #to load, pipe: restore\nfilename
+  OUTPUT=$(echo "$MOVE" | dfrotz zork1.z3)
   RESPONSE="{ \"result\" : \"${OUTPUT}\" }"
 
   echo $RESPONSE

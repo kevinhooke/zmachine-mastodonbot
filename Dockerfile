@@ -5,6 +5,7 @@ COPY bootstrap ${LAMBDA_RUNTIME_DIR}
 RUN chmod +x ${LAMBDA_RUNTIME_DIR}/bootstrap
 
 RUN yum update -y
+RUN yum install jq -y
 RUN yum install git -y
 RUN git clone https://github.com/DavidGriffith/frotz.git
 RUN yum install make -y
