@@ -10,7 +10,10 @@ function handler () {
   #to save, pipe: save\nfilename
   #to load, pipe: restore\nfilename
   OUTPUT=$(echo "$MOVE" | dfrotz zork1.z3)
+  echo "$OUTPUT" 1>&2;
   RESPONSE="{ \"result\" : \"${OUTPUT}\" }"
 
+  # is aws cli present?
+  aws s3 cp /tmp/test.zql s3://zmachine-bot-savegames/test.zql
   echo $RESPONSE
 }

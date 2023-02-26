@@ -3,13 +3,61 @@ service: custom-lambda-zork
 provider:
   name: aws
   region: us-west-2
-#  architecture: arm64
+  architecture: arm64
+  role: iamRoleZmachineBot
   ecr:
     images:
-      aws-custom-container:
+      custom-lambda-zork:
         path: ./
 
 functions:
   test:
     image:
       name: custom-lambda-zork
+
+resources:
+  Resources:
+    zorkSaveGameBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: zmachine-bot-savegames
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+    iamRoleZmachineBot:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: iam-role-zmachine-bot
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+        Path: /
+        Policies:
+        - PolicyName: iam-role-policy-zmachine-bot
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+                - logs:DescribeLogStreams
+                - logs:DeleteLogGroup
+                - logs:DeleteLogStream
+              Resource:
+                - arn:aws:logs:${aws:region}:${aws:accountId}:log-group:/aws/lambda/custom-lambda-zork*
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:GetObject
+              Resource:
+                - arn:aws:s3:::zmachine-bot-savegames
+                - arn:aws:s3:::zmachine-bot-savegames/*
