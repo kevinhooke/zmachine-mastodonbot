@@ -14,7 +14,7 @@ functions:
   test:
     image:
       name: custom-lambda-zork
-
+    
 resources:
   Resources:
     zorkSaveGameBucket:

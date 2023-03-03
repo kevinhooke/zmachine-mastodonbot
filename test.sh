@@ -17,5 +17,5 @@ function handler () {
 
   # use aws cli to copy savegame file from /tmp/$USERID.qzl to s3 bucket
   aws s3 cp /tmp/$USERID.qzl s3://zmachine-bot-savegames/$USERID.qzl
-  echo $RESPONSE
+  echo "$RESPONSE"
 }
