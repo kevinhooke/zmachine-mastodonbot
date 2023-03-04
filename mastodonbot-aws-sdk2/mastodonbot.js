@@ -3,14 +3,15 @@ let lambda = new AWS.Lambda();
 
 exports.handler =  async function(event, context) {
     console.log("EVENT: \n" + JSON.stringify(event, null, 2))
-    
-    let payload = {
-        "move" : "N",
-        "userid" : "kevinhoooke"
-    };
-    console.log("here1");
-    console.log("here2");
+    let playerMove = event.move;
+    let playerId = event.userid;
 
+    //TODO validate params here
+
+    let payload = {
+        "move" : playerMove,
+        "userid" : playerId
+    };
     let result = await lambda.invoke(
         {
             FunctionName: "custom-lambda-zork-dev-test",
@@ -18,10 +19,9 @@ exports.handler =  async function(event, context) {
         }
     ).promise();
     
-    console.log("here3");
     console.log("response: " + JSON.stringify(result));
 
     return {
-        "result" : result
+        "result" : result.Payload.result
     }
   }
