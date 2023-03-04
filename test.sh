@@ -11,11 +11,11 @@ function handler () {
   #to save, pipe: save\nfilename
   #to load, pipe: restore\nfilename
   # (echo "N"; echo "save"; echo "multiple.qzl")
-  OUTPUT=$( (echo "$MOVE"; echo "save"; echo "/tmp/$USERID.qzl";) | dfrotz zork1.z3)
+  OUTPUT=$( (echo "$MOVE"; echo "save"; echo "/tmp/$USERID.qzl"; echo "quit"; echo "";) | dfrotz zork1.z3)
   echo "$OUTPUT" 1>&2;
   RESPONSE="{ \"result\" : \"$OUTPUT\" }"
 
   # use aws cli to copy savegame file from /tmp/$USERID.qzl to s3 bucket
-  aws s3 cp /tmp/$USERID.qzl s3://zmachine-bot-savegames/$USERID.qzl
+  S3OUTPUT=$(aws s3 cp /tmp/$USERID.qzl s3://zmachine-bot-savegames/$USERID.qzl)
   echo "$RESPONSE"
 }
