@@ -1,0 +1,71 @@
+service: mastodonbot-zorkbot
+
+frameworkVersion: '2 || 3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
+  timeout: 10
+  iam:
+    role: mastodonZorkbotReplyRole
+functions:
+  mastodon-reply:
+    handler: lambda-mastodonzorkbot.handler
+    events:
+      # Invoke Lambda function every 5 mins
+      - schedule: rate(15 minutes)
+resources:
+  Resources:
+    mastodonbotRepliesDynamoDB: 
+      Type: AWS::DynamoDB::Table
+      Properties: 
+        AttributeDefinitions: 
+          - 
+            AttributeName: "statusKey"
+            AttributeType: "S"
+        KeySchema: 
+          - 
+            AttributeName: "statusKey"
+            KeyType: "HASH"
+        ProvisionedThroughput: 
+          ReadCapacityUnits: "1"
+          WriteCapacityUnits: "1"
+        TableName: "mastodonzorkbot"
+
+    mastodonZorkbotReplyRole:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action:
+                - 'sts:AssumeRole'
+        Path: /
+        Policies:
+          - PolicyName: iam-policy-mastodonzorkbot
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
+                    - logs:DeleteLogGroup
+                    - logs:DeleteLogStream
+                  Resource:
+                    - arn:aws:logs:${aws:region}:${aws:accountId}:log-group:/aws/lambda/mastodonbot-zorkbot*
+                - Effect: Allow
+                  Action:
+                    - "dynamodb:Scan"
+                    - "dynamodb:Query"
+                    - "dynamodb:UpdateItem"
+                  Resource:
+                    - "arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/mastodonzorkbot"
+                    - "arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/mastodonzorkbot/index/Index"

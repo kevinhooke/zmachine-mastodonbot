@@ -1,0 +1,4 @@
+{
+    "send-enabled" : "true",
+    "access-token" : "[YOUR-MASTODON-ACCESS-TOKEN]"
+}
