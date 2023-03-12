@@ -1,6 +1,8 @@
 let AWS = require("aws-sdk");
 let lambda = new AWS.Lambda();
 
+const GAME_TEXT_INTRO = "ZORK I: The Great Underground Empire\nInfocom interactive fiction - a fantasy story\nCopyright (c) 1981, 1982, 1983, 1984, 1985, 1986 Infocom, Inc. All rights\nreserved.\nZORK is a registered trademark of Infocom, Inc.\nRelease 119 / Serial number 880429";
+
 exports.handler =  async function(event, context) {
     console.log("EVENT: \n" + JSON.stringify(event, null, 2))
     let playerMove = event.move;
@@ -25,26 +27,11 @@ exports.handler =  async function(event, context) {
     let resultPayload = result.Payload;
 
     console.log("resultPayload: " + resultPayload);
-    let parsedResult = resultPayload.replace("ZORK I: The Great Underground Empire\nInfocom interactive fiction - a fantasy story\nCopyright (c) 1981, 1982, 1983, 1984, 1985, 1986 Infocom, Inc. All rights\nreserved.\nZORK is a registered trademark of Infocom, Inc.\nRelease 119 / Serial number 880429", "");
-    // let introPattern = /.*>/i
-    // parsedResult = parsedResult.replace(introPattern, "");
-
-    // //let currentLocationPattern = /.*\\n\\n\\n\\n.*\\n\\n/i
-    // let currentLocationPattern = /.*Moves: \d\n\n\n\n/i
-    // parsedResult = parsedResult.replace(currentLocationPattern, "");
-
-    // let currentLocationPattern2 = /.*\n\n/i
-    // parsedResult = parsedResult.replace(currentLocationPattern2, "");
-
-    // let currentLocationPattern3 = /.*Moves: \d\n\n/i
-    // parsedResult = parsedResult.replace(currentLocationPattern3, "");
-
+    let parsedResult = exports.parsePayload(resultPayload);
+    console.log("parsedResult: " + parsedResult);
+    
     //split on entry prompt '>'
     let lines = parsedResult.split('>');
-
-    // lines.forEach(element => {
-    //     console.log("line: >" + element);
-    // });
 
     //prompt 0 text = game intro before save game is loaded
     //prompt 1 text = text after game is loaded
@@ -53,9 +40,21 @@ exports.handler =  async function(event, context) {
     //latest game position is 4 back from the end of the text
     //TODO this doesn't work for first game start
     let currentGamePosition = lines[lines.length - 5];
-    console.log("parsedResult: " + currentGamePosition);
+    console.log("currentGamePosition: " + currentGamePosition);
 
     return {
         "result" : currentGamePosition
     }
+  }
+
+  exports.parsePayload = (payload) => {
+    let result = payload;
+    
+    //strip intro text
+    result = result.replace(GAME_TEXT_INTRO, "");
+    
+    //replace literal \n with escaped \\n
+    result = result.replace(/\n/g, "\\n");
+
+    return result;
   }
