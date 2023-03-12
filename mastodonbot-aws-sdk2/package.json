@@ -1,5 +1,12 @@
 {
+  "scripts": {
+    "eslint": "eslint -f *.js",
+    "test": "jest *test.js"
+  },
   "dependencies": {
     "aws-sdk": "^2.1327.0"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
   }
 }

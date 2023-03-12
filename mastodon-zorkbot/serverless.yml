@@ -69,3 +69,8 @@ resources:
                   Resource:
                     - "arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/mastodonzorkbot"
                     - "arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/mastodonzorkbot/index/Index"
+                - Effect: Allow
+                  Action:
+                    - lambda:InvokeFunction
+                  Resource:
+                    - arn:aws:lambda:${aws:region}:${aws:accountId}:function:zmachine-mastodonbot-reply-v2-dev-mastodon-reply-v2

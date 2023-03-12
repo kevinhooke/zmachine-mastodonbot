@@ -2,6 +2,10 @@ let lastStatusQuery = require('./db_status.js');
 let mastodonReplies = require('./mastodon-queryMentions.js');
 let mastodonSend = require('./mastodon-send.js');
 let config = require('./config/config-mastodon.json');
+let parser = require('./mastodon-contentparser.js');
+
+let AWS = require("aws-sdk");
+let lambda = new AWS.Lambda();
 
 exports.handler = async (event) => {
 
@@ -35,11 +39,36 @@ exports.handler = async (event) => {
 
                     let replyToBotText = reply.status.content;
                     console.log(`reply text: ${replyToBotText}`);
+
+                    //extract text from HTML reply
+                    replyToBotText =  parser.extractTextFromContent(replyToBotText);
+
+                    //strip @zorkbot
+                    console.log(`Before removing @:${replyToBotText}`);
+                    let replyText = replyToBotText.replace(/@[\s]+zorkbot/, '');
+                    replyText = replyText.trim();
+                    console.log(`...after removing @:${replyText}`);
                     let textReply = `@${replyToAccount} `;
             
                     //TODO integrate with zork lambda here
-
+                    let payload = {
+                        "move" : replyText,
+                        "userid" : replyToAccount
+                    };
+                    let result = await lambda.invoke(
+                        {
+                            FunctionName: "zmachine-mastodonbot-reply-v2-dev-mastodon-reply-v2",
+                            Payload: JSON.stringify(payload)
+                        }
+                    ).promise();
                     
+                    console.log("lambda result: " + JSON.stringify(result));
+                    
+                    //parse and extract result from Payload here
+                    let parsedPayload = exports.parseResponse(result);
+                
+                    console.log("resultPayload: " + parsedPayload);
+                    textReply = `${textReply} ${parsedPayload.result}`;
                     var status = ({
                         'text': textReply
                     });
@@ -105,4 +134,12 @@ exports.getTextReply = function(){
     let nextMsg = replytext[next];
     console.log('Next msg: ' + nextMsg);
     return nextMsg;
+}
+
+exports.parseResponse = (response) => {
+
+    let parsedResponse = JSON.parse(response.Payload);
+    console.log("parsedResponse: " + JSON.stringify(parsedResponse));
+
+    return parsedResponse;
 }
