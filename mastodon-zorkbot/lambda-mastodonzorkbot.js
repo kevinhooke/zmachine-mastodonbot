@@ -7,6 +7,9 @@ let parser = require('./mastodon-contentparser.js');
 let AWS = require("aws-sdk");
 let lambda = new AWS.Lambda();
 
+const MAX_LENGTH_CONT_MESSAGE = " [cont.]";
+const REPLY_HASHTAGS = "\n\n#zork #interactivefiction";
+
 exports.handler = async (event) => {
 
     console.log('lambda-mastodonzorkbot called');
@@ -69,6 +72,19 @@ exports.handler = async (event) => {
                 
                     console.log("resultPayload: " + parsedPayload);
                     textReply = `${textReply} ${parsedPayload.result}`;
+
+                    //TODO mastodon send api has max 500 chars for the text. if game text is > 500
+                    //split into multiple replies
+                    //For now, just truncate response
+                    if(textReply.length > 500){
+                        textReply = textReply.substring(0, 499 
+                            - MAX_LENGTH_CONT_MESSAGE.length - REPLY_HASHTAGS.length);
+                        textReply = textReply + MAX_LENGTH_CONT_MESSAGE;
+                    }
+                    
+                    //append hsahtags
+                    textReply = textReply + REPLY_HASHTAGS;
+
                     var status = ({
                         'text': textReply
                     });
@@ -78,7 +94,7 @@ exports.handler = async (event) => {
             
                         //send reply with Mastodon api
                         let result = await mastodonSend.postMastodon(reply.status.id, status);
-                        console.log(`postMastodon result: ${result}`);
+                        console.log(`postMastodon result: ${JSON.stringify(result)}`);
                     }
                     else {
                         console.log("config.send-enabled: false, not sending reply");
@@ -90,6 +106,8 @@ exports.handler = async (event) => {
                     console.log(`Reply id [${reply.id}] is before last acknowledged id: ${lastRepliedToStatusId}, ignoring`);
                 }
             }
+            
+            //TODO check mastondon response and only store lastStatusId if the send was successful
 
             if(mostRecentIdRepliedTo > 0){
                 //update last replied to id with the most recent (highest) in this last processed group
