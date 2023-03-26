@@ -1,0 +1,5 @@
+{
+    "send-enabled" : "true",
+    "tableupdate-enabled" : "true",
+    "access-token" : "YOUR-TOKEN-HERE"
+}

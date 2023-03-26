@@ -1,10 +1,10 @@
-service: mastodonbot-zorkbot
+service: zorkbot-1
 
 frameworkVersion: '2 || 3'
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
   lambdaHashingVersion: 20201221
   timeout: 10
   iam:
@@ -14,7 +14,7 @@ functions:
     handler: lambda-mastodonzorkbot.handler
     events:
       # Invoke Lambda function every 5 mins
-      - schedule: rate(15 minutes)
+      - schedule: rate(10 minutes)
 resources:
   Resources:
     mastodonbotRepliesDynamoDB: 
@@ -60,7 +60,7 @@ resources:
                     - logs:DeleteLogGroup
                     - logs:DeleteLogStream
                   Resource:
-                    - arn:aws:logs:${aws:region}:${aws:accountId}:log-group:/aws/lambda/mastodonbot-zorkbot*
+                    - arn:aws:logs:${aws:region}:${aws:accountId}:log-group:/aws/lambda/${self:service}*
                 - Effect: Allow
                   Action:
                     - "dynamodb:Scan"

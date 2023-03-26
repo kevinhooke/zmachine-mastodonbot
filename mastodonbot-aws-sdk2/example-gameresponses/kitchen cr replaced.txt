@@ -1,0 +1,12 @@
+ Kitchen                                     Score: 10       Moves: 37
+
+Kitchen
+You are in the kitchen of the white house. A table seems to have been used
+recently for the preparation of food. A passage leads to the west and a
+dark staircase can be seen leading upward. A dark chimney leads down and to
+the east is a small window which is open.
+A bottle is sitting on the table.
+The glass bottle contains:
+  A quantity of water
+On the table is an elongated brown sack, smelling of hot peppers.
+

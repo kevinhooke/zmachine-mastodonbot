@@ -8,7 +8,7 @@ let AWS = require("aws-sdk");
 let lambda = new AWS.Lambda();
 
 const MAX_LENGTH_CONT_MESSAGE = " [cont.]";
-const REPLY_HASHTAGS = "\n\n#zork #interactivefiction";
+const REPLY_HASHTAGS = "\n\n#zorkbot";
 
 exports.handler = async (event) => {
 
@@ -76,7 +76,7 @@ exports.handler = async (event) => {
                     //TODO mastodon send api has max 500 chars for the text. if game text is > 500
                     //split into multiple replies
                     //For now, just truncate response
-                    if(textReply.length > 500){
+                    if(textReply.length > (500 - MAX_LENGTH_CONT_MESSAGE.length - REPLY_HASHTAGS.length)){
                         textReply = textReply.substring(0, 499 
                             - MAX_LENGTH_CONT_MESSAGE.length - REPLY_HASHTAGS.length);
                         textReply = textReply + MAX_LENGTH_CONT_MESSAGE;
@@ -111,12 +111,12 @@ exports.handler = async (event) => {
 
             if(mostRecentIdRepliedTo > 0){
                 //update last replied to id with the most recent (highest) in this last processed group
-                if(config['send-enabled'] === 'true'){
+                if(config['tableupdate-enabled'] === 'true'){
                     let updateResult = await lastStatusQuery.updateDbStatus('lastStatusId', mostRecentIdRepliedTo);
                     console.log(`updateDbStatus result: ${JSON.stringify(updateResult)}`);
                 }
                 else{
-                    console.log('Skipping updateDbStatus, config.send-enabled is false');
+                    console.log('Skipping updateDbStatus, config.tableupdate-enabled is false');
                 }
             }
         }

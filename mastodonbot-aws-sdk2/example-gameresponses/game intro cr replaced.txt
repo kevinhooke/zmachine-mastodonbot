@@ -1,0 +1,30 @@
+ West of House                               Score: 0        Moves: 0
+
+ZORK I: The Great Underground Empire
+Infocom interactive fiction - a fantasy story
+Copyright (c) 1981, 1982, 1983, 1984, 1985, 1986 Infocom, Inc. All rights
+reserved.
+ZORK is a registered trademark of Infocom, Inc.
+Release 119 / Serial number 880429
+
+West of House
+You are standing in an open field west of a white house, with a boarded
+front door.
+There is a small mailbox here.
+
+> West of House                               Score: 0        Moves: 1
+
+West of House
+You are standing in an open field west of a white house, with a boarded
+front door.
+There is a small mailbox here.
+
+>Please enter a filename [zork1.qzl]: Ok.
+
+>There was no verb in that sentence!
+
+>Your score is 0 (total of 350 points), in 1 move.
+This gives you the rank of Beginner.
+Do you wish to leave the game? (Y is affirmative): >Ok.
+
+>

@@ -1,0 +1,8 @@
+{
+    "statusKey": {
+      "S": "lastStatusId"
+    },
+    "lastReplyId": {
+      "S": "8246272"
+    }
+  }
